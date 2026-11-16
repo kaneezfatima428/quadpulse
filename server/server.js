@@ -2,20 +2,8 @@ import './src/config/env.js';
 import app from './src/app.js';
 import connectDB from './src/db/db.js';
 import { seedDefaultAdmin } from './src/scripts/seedAdmin.js';
-import mongoose from 'mongoose';
 
-const PORT = process.env.PORT || 5000;
-
-// Start listening immediately so port 5000 is open and never returns ERR_CONNECTION_REFUSED
-const server = app.listen(PORT, () => {
-  console.log(`==================================================`);
-  console.log(`🚀 ClinicPulse Server running on port ${PORT}`);
-  console.log(`📡 Base URL: http://localhost:${PORT}`);
-  console.log(`🩺 API Health: http://localhost:${PORT}/api/health`);
-  console.log(`==================================================`);
-});
-
-// Connect to MongoDB asynchronously without blocking server startup
+// Connect to MongoDB and seed admin (runs on every cold start in serverless too)
 (async () => {
   const conn = await connectDB();
   if (conn) {
@@ -23,4 +11,18 @@ const server = app.listen(PORT, () => {
   }
 })();
 
+// Local development: start HTTP server
+// Vercel serverless: skip app.listen(), just export app
+if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`==================================================`);
+    console.log(`🚀 ClinicPulse Server running on port ${PORT}`);
+    console.log(`📡 Base URL: http://localhost:${PORT}`);
+    console.log(`🩺 API Health: http://localhost:${PORT}/api/health`);
+    console.log(`==================================================`);
+  });
+}
+
+// Vercel needs this default export to handle requests
 export default app;

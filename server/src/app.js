@@ -13,9 +13,26 @@ import adminRoutes from './routes/admin.routes.js';
 const app = express();
 
 // Cross-Origin Resource Sharing (CORS)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  // Production — add all your Vercel frontend URLs here
+  'https://quadpulse-mu.vercel.app',
+  'https://clinicpulse-56edhujpd-8steer.vercel.app',
+  process.env.CLIENT_URL,
+  process.env.client_url,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      // Allow all *.vercel.app preview deployments
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+      callback(new Error(`CORS: Origin '${origin}' not allowed`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
