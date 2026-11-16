@@ -1,12 +1,16 @@
 import axios from 'axios';
 
-// In production (Vercel) VITE_API_URL must be set in Vercel dashboard.
-// Fallback chain: env var → production backend → localhost for dev
+// In Vite, env vars must be prefixed with VITE_ to be exposed in the client bundle.
+// Keep both names supported to avoid production breakage from older env files.
 const PROD_API = 'https://quadpulse-mu.vercel.app/api';
-const DEV_API  = 'http://localhost:5000/api';
+const DEV_API = 'http://localhost:5000/api';
+const resolvedBaseURL =
+  import.meta.env.API_URL ||
+  import.meta.env.API_URL ||
+  (import.meta.env.PROD ? PROD_API : DEV_API);
 
 const api = axios.create({
-  baseURL: import.meta.env.API_URL || (import.meta.env.PROD ? PROD_API : DEV_API),
+  baseURL: resolvedBaseURL,
   headers: {
     'Content-Type': 'application/json'
   },

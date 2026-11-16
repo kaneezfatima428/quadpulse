@@ -37,7 +37,7 @@ npm install
 
 ### 2. Configure Environment (`.env`)
 ```env
-VITE_API_URL=http://localhost:5000/api
+API_URL=http://localhost:5000/api
 ```
 
 ### 3. Start Development Server
