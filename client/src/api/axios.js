@@ -28,8 +28,11 @@ api.interceptors.response.use(
   (error) => {
     // If backend is unreachable (ERR_CONNECTION_REFUSED or Network Error)
     if (!error.response) {
+      const isProd = import.meta.env.PROD;
       const customError = new Error(
-        'Backend server is not reachable on port 5000. Please start your backend with: cd server && npm start'
+        isProd
+          ? 'Unable to reach the server. Please try again later.'
+          : 'Backend server is not reachable on port 5000. Please start your backend with: cd server && npm start'
       );
       customError.isNetworkError = true;
       return Promise.reject(customError);
